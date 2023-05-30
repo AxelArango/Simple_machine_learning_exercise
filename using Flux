@@ -1,0 +1,32 @@
+using Flux
+using Flux: onehotbatch, crossentropy, throttle
+using Base.Iterators: repeated
+using Statistics
+
+# Generate some toy data
+inputs = rand(10, 5)  # Input features
+targets = rand(10)    # Output labels
+
+# Define a simple model
+model = Chain(
+  Dense(2, 10, relu),
+  Dense(10, 2),
+  softmax
+)
+
+# Define loss function and optimizer
+loss(x, y) = crossentropy(model(x), y)
+optimizer = ADAM()
+
+#Train model
+dataset = repeated((inputs, targets), 10)
+for epoch in 1:10
+    Flux.train!(loss, model, dataset, optimizer)
+end
+
+# Use the trained model for prediction
+new_input = rand(5)  # New input data for prediction
+prediction = model(new_input)
+
+# Print the predicted labels
+println("Predicted labels: ", prediction)
